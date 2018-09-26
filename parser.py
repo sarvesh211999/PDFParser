@@ -1,5 +1,5 @@
 import PyPDF2
-import nltk
+import nltk, os, subprocess, code, glob, re, traceback, sys, inspect
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
@@ -12,19 +12,22 @@ import re
 import itertools
 #open the file
 
+pdf_files = glob.glob("./Sample/*.pdf")
 
-filePath = './Sample/Resume for SVB.pdf'
-extension = filePath.lower().endswith(('.docx', '.doc'))
-text  = ""
-if extension == False:
-    pdfObject = open(filePath,'rb')
-    pdfReader = PyPDF2.PdfFileReader(pdfObject)
+# filePath = './Sample/PulkitGera.pdf'
 
-    for i in range(0,pdfReader.numPages):
-    	pageObj = pdfReader.getPage(0)
-    	text += pageObj.extractText()
+def getText(path):
+	text = ""
+	if extension == False:
+	    pdfObject = open(path,'rb')
+	    pdfReader = PyPDF2.PdfFileReader(pdfObject)
 
-    text = " ".join(text.replace(u"\xa0", " ").strip().split())
+	    for i in range(0,pdfReader.numPages):
+	    	pageObj = pdfReader.getPage(0)
+	    	text += pageObj.extractText()
+
+	    text = " ".join(text.replace(u"\xa0", " ").strip().split())
+	return text
 
 def convertPDFToText(path):
     rsrcmgr = PDFResourceManager()
@@ -50,44 +53,52 @@ def convertDocxToText(path):
     document = Document(path)
     return "\n".join([para.text for para in document.paragraphs])
 
+def getName(text):
+		tokens = word_tokenize(text)
+		# print(tokens)
+		# print("--------------------------------------------")
+		punctuations = ['(',')',';',':','[',']',',']
+		stop_words = stopwords.words('english')
 
+		# print(stop_words)
+		# print("--------------------------------------------")
+		filtered = [i for i in tokens if not i in stop_words]
+		# print(filtered)
+		# print("--------------------------------------------")
 
-if text == "":
-    if extension == False:
-        text = convertPDFToText(filePath)
-    else:
-        text = convertDocxToText(filePath)
-
-print(text)
-
-tokens = word_tokenize(text)
-# print(tokens)
-# print("--------------------------------------------")
-punctuations = ['(',')',';',':','[',']',',']
-stop_words = stopwords.words('english')
-
-# print(stop_words)
-# print("--------------------------------------------")
-filtered = [i for i in tokens if not i in stop_words]
-# print(filtered)
-# print("--------------------------------------------")
-
-name  = str(filtered[0])+' ' +str(filtered[1])
-print ("Name : " + name)
-
-# print(text)
-
-######################################################################
-#mobile
-
+		name  = str(filtered[0])+' ' +str(filtered[1])
+		return name
+	
 def cc(s):
     return (''.join(t) for t in itertools.product(*zip(s.lower(), s.upper())))
-mobile = ""
-for item in mystring.split("\n"):
-  if "token" in item:
-     print item.strip()
-match_mobile = re.search(r'((?:\(?\+91\)?)?\d{9})',text)
-#handling the cases when mobile number is not given
-if(match_mobile != None):
-    mobile = match_mobile.group(0)
-print ("Mobile : " +  mobile)
+
+def getMobile(text):
+		r = re.compile(r'([+(]?\d+[)\-]?[ \t\r\f\v]*[(]?\d{2,}[()\-]?[ \t\r\f\v]*\d{2,}[()\-]?[ \t\r\f\v]*\d*[ \t\r\f\v]*\d*[ \t\r\f\v]*)')
+		phone_numbers = r.findall(text)
+		return [re.sub(r'\D', '', number) for number in phone_numbers]
+
+def getEmail(text):
+
+		email = ""
+		match_mail = re.search(r'[\w\.-]+@[\w\.-]+', text)
+		#handling the cases when mobile number is not given
+		if(match_mail != None):
+		    email = match_mail.group(0)
+		return email
+
+
+for i in pdf_files:
+	print(i)
+	extension = i.lower().endswith(('.docx'))
+	text  = ""
+	filePath = i
+	text = getText(filePath)
+	if text == "":
+	    if extension == False:
+	        text = convertPDFToText(filePath)
+	    else:
+	        text = convertDocxToText(filePath)
+
+	print(getMobile(text))
+	print(getEmail(text))
+  
