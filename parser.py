@@ -14,7 +14,6 @@ import itertools
 
 pdf_files = glob.glob("./Sample/*.pdf")
 
-# filePath = './Sample/PulkitGera.pdf'
 
 def getText(path):
 	text = ""
@@ -73,9 +72,25 @@ def cc(s):
     return (''.join(t) for t in itertools.product(*zip(s.lower(), s.upper())))
 
 def getMobile(text):
-		r = re.compile(r'([+(]?\d+[)\-]?[ \t\r\f\v]*[(]?\d{2,}[()\-]?[ \t\r\f\v]*\d{2,}[()\-]?[ \t\r\f\v]*\d*[ \t\r\f\v]*\d*[ \t\r\f\v]*)')
-		phone_numbers = r.findall(text)
-		return [re.sub(r'\D', '', number) for number in phone_numbers]
+		# r = re.compile(r'([+(]?\d+[)\-]?[ \t\r\f\v]*[(]?\d{2,}[()\-]?[ \t\r\f\v]*\d{2,}[()\-]?[ \t\r\f\v]*\d*[ \t\r\f\v]*\d*[ \t\r\f\v]*)')
+		# r = re.compile('?:\s+|)((0|(?:(\+|)91))(?:\s|-)*(?:(?:\d(?:\s|-)*\d{9})|(?:\d{2}(?:\s|-)*\d{8})|(?:\d{3}(?:\s|-)*\d{7}))|\d{10})(?:\s+|))')
+		# regex = '(?:\s+|)((0|(?:(\+|)91))(?:\s|-)*(?:(?:\d(?:\s|-)*\d{9})|(?:\d{2}(?:\s|-)*\d{8})|(?:\d{3}(?:\s|-)*\d{7}))|\d{10})(?:\s+|)'
+		phone_numbers = re.search('(?:\s+|)((0|(?:(\+|)91))(?:\s|-)*(?:(?:\d(?:\s|-)*\d{9})|(?:\d{2}(?:\s|-)*\d{8})|(?:\d{3}(?:\s|-)*\d{7}))|\d{10})(?:\s+|)',text)
+		# phone_numbers = r.findall(text)
+		# phone_numbers = [re.sub(r'[,.]', '', el) for el in phone_numbers if len(re.sub(r'[()\-.,\s+]', '', el))>6]
+		# phone_numbers = [re.sub(r'\D$', '', el).strip() for el in phone_numbers]
+		# phone_numbers = [el for el in phone_numbers if len(re.sub(r'\D','',el)) <= 15]
+		# return [re.sub(r'\D', '', number) for number in phone_numbers]
+		if phone_numbers != None:
+			return phone_numbers.group(0)
+		else:
+			return None
+
+def getMobileTry2(text):
+		pattern = re.compile(r'\+?\d[\d -]{8,12}\d')
+		phone_numbers = pattern.findall(text)
+		return [re.sub(r'\D','',number) for number in phone_numbers]
+
 
 def getEmail(text):
 
@@ -87,6 +102,7 @@ def getEmail(text):
 		return email
 
 
+mobile_array=[]
 for i in pdf_files:
 	print(i)
 	extension = i.lower().endswith(('.docx'))
@@ -98,7 +114,8 @@ for i in pdf_files:
 	        text = convertPDFToText(filePath)
 	    else:
 	        text = convertDocxToText(filePath)
-
-	print(getMobile(text))
 	print(getEmail(text))
-  
+	mobile_array.append(getMobile(text))
+
+print(mobile_array)
+
