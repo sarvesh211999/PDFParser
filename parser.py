@@ -96,7 +96,6 @@ def getEmail(text):
 
 		email = ""
 		match_mail = re.search(r'[\w\.-]+@[\w\.-]+', text)
-		#handling the cases when mobile number is not given
 		if(match_mail != None):
 		    email = match_mail.group(0)
 		return email
