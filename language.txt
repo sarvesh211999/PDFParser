@@ -1,0 +1,185 @@
+Afar 
+Abkhaz 
+Avestan 
+Afrikaans 
+Akan 
+Amharic 
+Aragonese 
+Arabic 
+Assamese 
+Avaric 
+Aymara 
+Azerbaijani 
+South Azerbaijani 
+Bashkir 
+Belarusian 
+Bulgarian 
+Bihari 
+Bislama 
+Bambara 
+Bengali; Bangla 
+"Tibetan Standard, Tibetan, Central "
+Breton 
+Bosnian 
+Catalan; Valencian 
+Chechen 
+Chamorro 
+Corsican 
+Cree 
+Czech 
+"Old Church Slavonic, Church Slavonic, Old Bulgarian "
+Chuvash 
+Welsh 
+Danish 
+German 
+Divehi; Dhivehi; Maldivian; 
+Dzongkha 
+Ewe 
+"Greek, Modern "
+English 
+Esperanto 
+Spanish; Castilian 
+Estonian 
+Basque 
+Persian (Farsi) 
+Fula; Fulah; Pulaar; Pular 
+Finnish 
+Fijian 
+Faroese 
+French 
+Western Frisian 
+Irish 
+Scottish Gaelic; Gaelic 
+Galician 
+Guaraní 
+Gujarati 
+Manx 
+Hausa 
+Hebrew (modern) 
+Hindi 
+Hiri Motu 
+Croatian 
+Haitian; Haitian Creole 
+Hungarian 
+Armenian 
+Herero 
+Interlingua 
+Indonesian 
+Interlingue 
+Igbo 
+Nuosu 
+Inupiaq 
+Ido 
+Icelandic 
+Italian 
+Inuktitut 
+Japanese 
+Javanese 
+Georgian 
+Kongo 
+"Kikuyu, Gikuyu "
+"Kwanyama, Kuanyama "
+Kazakh 
+"Kalaallisut, Greenlandic "
+Khmer 
+Kannada 
+Korean 
+Kanuri 
+Kashmiri 
+Kurdish 
+Komi 
+Cornish 
+Kyrgyz 
+Latin 
+"Luxembourgish, Letzeburgesch "
+Ganda 
+"Limburgish, Limburgan, Limburger "
+Lingala 
+Lao 
+Lithuanian 
+Luba-Katanga 
+Latvian 
+Malagasy 
+Marshallese 
+Māori 
+Macedonian 
+Malayalam 
+Mongolian 
+Marathi (Marāṭhī) 
+Malay 
+Maltese 
+Burmese 
+Nauru 
+Norwegian Bokmål 
+North Ndebele 
+Nepali 
+Ndonga 
+Dutch 
+Norwegian Nynorsk 
+Norwegian 
+South Ndebele 
+"Navajo, Navaho "
+Chichewa; Chewa; Nyanja 
+Occitan 
+"Ojibwe, Ojibwa "
+Oromo 
+Oriya 
+"Ossetian, Ossetic "
+"Panjabi, Punjabi "
+Pāli 
+Polish 
+"Pashto, Pushto "
+Portuguese 
+Quechua 
+Romansh 
+Kirundi 
+Romanian 
+Russian 
+Kinyarwanda 
+Sanskrit (Saṁskṛta) 
+Sardinian 
+Sindhi 
+Northern Sami 
+Sango 
+"Sinhala, Sinhalese "
+Slovak 
+Slovene 
+Samoan 
+Shona 
+Somali 
+Albanian 
+Serbian 
+Swati 
+Southern Sotho 
+Sundanese 
+Swedish 
+Swahili 
+Tamil 
+Telugu 
+Tajik 
+Thai 
+Tigrinya 
+Turkmen 
+Tagalog 
+Tswana 
+Tonga (Tonga Islands) 
+Turkish 
+Tsonga 
+Tatar 
+Twi 
+Tahitian 
+"Uyghur, Uighur "
+Ukrainian 
+Urdu 
+Uzbek 
+Venda 
+Vietnamese 
+Volapük 
+Walloon 
+Wolof 
+Xhosa 
+Yiddish 
+Yoruba 
+"Zhuang, Chuang "
+Chinese 
+Zulu 

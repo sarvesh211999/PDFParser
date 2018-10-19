@@ -1,3 +1,4 @@
+import numpy as np
 import PyPDF2
 import nltk, os, subprocess, code, glob, re, traceback, sys, inspect
 from nltk.tokenize import word_tokenize
@@ -10,10 +11,65 @@ from io import StringIO
 from docx import Document
 import re
 import itertools
-#open the file
+import csv
+import pickle
+import spacy
+from spacy import displacy
+import en_core_web_sm
+# ################## model #########################
+# nlp = spacy.load('./NER')
+# ##################################################
+# #open the file
 
 pdf_files = glob.glob("./Sample/*.pdf")
+docx_files = glob.glob("./Sample/*.docx")
+scan = []
+for i in pdf_files:
+	scan.append(i)
+for i in docx_files:
+	scan.append(i)
 
+def preprocess(self, document):
+        '''
+        Information Extraction: Preprocess a document with the necessary POS tagging.
+        Returns three lists, one with tokens, one with POS tagged lines, one with POS tagged sentences.
+        Modules required: nltk
+        '''
+        try:
+            # Try to get rid of special characters
+            try:
+                document = document.decode('ascii', 'ignore')
+            except:
+                document = document.encode('ascii', 'ignore')
+            # Newlines are one element of structure in the data
+            # Helps limit the context and breaks up the data as is intended in resumes - i.e., into points
+            lines = [el.strip() for el in document.split("\n") if len(el) > 0]  # Splitting on the basis of newlines 
+            lines = [nltk.word_tokenize(el) for el in lines]    # Tokenize the individual lines
+            lines = [nltk.pos_tag(el) for el in lines]  # Tag them
+            # Below approach is slightly different because it splits sentences not just on the basis of newlines, but also full stops 
+            # - (barring abbreviations etc.)
+            # But it fails miserably at predicting names, so currently using it only for tokenization of the whole document
+            sentences = nltk.sent_tokenize(document)    # Split/Tokenize into sentences (List of strings)
+            sentences = [nltk.word_tokenize(sent) for sent in sentences]    # Split/Tokenize sentences into words (List of lists of strings)
+            tokens = sentences
+            sentences = [nltk.pos_tag(sent) for sent in sentences]    # Tag the tokens - list of lists of tuples - each tuple is (<word>, <tag>)
+            # Next 4 lines convert tokens from a list of list of strings to a list of strings; basically stitches them together
+            dummy = []
+            for el in tokens:
+                dummy += el
+            tokens = dummy
+            # tokens - words extracted from the doc, lines - split only based on newlines (may have more than one sentence)
+            # sentences - split on the basis of rules of grammar
+            return tokens, lines, sentences
+        except Exception as e:
+            print (e) 
+
+def tokenize(self, inputString):
+    try:
+        self.tokens, self.lines, self.sentences = self.preprocess(inputString)
+        return self.tokens, self.lines, self.sentences
+    except Exception as e:
+        print (e)
 
 def getText(path):
 	text = ""
@@ -91,7 +147,6 @@ def getMobileTry2(text):
 		phone_numbers = pattern.findall(text)
 		return [re.sub(r'\D','',number) for number in phone_numbers]
 
-
 def getEmail(text):
 
 		email = ""
@@ -100,21 +155,54 @@ def getEmail(text):
 		    email = match_mail.group(0)
 		return email
 
+def getSkills(text):
+	programming = ["assembly", "bash", " c " "c++", "c#", "coffeescript", "emacs lisp",
+         "go!", "groovy", "haskell", "java", "javascript", "matlab", "max MSP", "objective c", 
+         "perl", "php","html", "xml", "css", "processing", "python", "ruby", "sml", "swift", 
+         "latex" "unity", "unix" "visual basic" "wolfram language", "xquery", "sql", "node.js", 
+         "scala", "kdb", "jquery", "mongodb"]
 
 mobile_array=[]
-for i in pdf_files:
+langfile = open('language.txt', 'r')
+s= []
+for lang in langfile:
+	s.append(lang.lower().replace(' ','').replace('\n','').replace('"',''))
+
+def getKnownLanguage(text):
+	skills = set()
+	knownSet = nltk.word_tokenize(text.lower())
+	for word in knownSet:
+		if word in s:
+			skills.add(word)
+
+	return skills
+
+
+for i in scan:
 	print(i)
 	extension = i.lower().endswith(('.docx'))
 	text  = ""
 	filePath = i
-	text = getText(filePath)
-	if text == "":
-	    if extension == False:
-	        text = convertPDFToText(filePath)
-	    else:
-	        text = convertDocxToText(filePath)
-	print(getEmail(text))
+	if extension == False:
+		text = convertPDFToText(filePath)
+	else:
+		text = convertDocxToText(filePath)
+
+	print("Name :" + getName(text))
+	print("Email : " + getEmail(text))
+	if getMobile(text) is not None:
+		print("Mobile : " + getMobile(text).replace("\n","").replace(" ","").replace(chr(160),""))
+	else:
+		print("None")
+
+	print("Language :",list(getKnownLanguage(text)))
+
 	mobile_array.append(getMobile(text))
 
-print(mobile_array)
+
+for i in range(0,len(mobile_array)):
+	if mobile_array[i] is not None:
+		mobile_array[i]=mobile_array[i].replace("\n","").replace(" ","").replace(chr(160),"")
+
+
 
