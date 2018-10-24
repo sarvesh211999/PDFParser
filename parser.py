@@ -13,9 +13,14 @@ import re
 import itertools
 import csv
 import pickle
-import spacy
-from spacy import displacy
-import en_core_web_sm
+from wand.image import Image as Img
+from PIL import Image
+import pyocr
+import pyocr.builders
+import io
+import pytesseract
+import datefinder
+import unicodedata
 # ################## model #########################
 # nlp = spacy.load('./NER')
 # ##################################################
@@ -108,11 +113,30 @@ def convertDocxToText(path):
     document = Document(path)
     return "\n".join([para.text for para in document.paragraphs])
 
+def convertPDFToOCR(path):
+	os.system("rm sample_scan*")
+	text = ""
+	pdfObject = open(path,'rb')
+	pdfReader = PyPDF2.PdfFileReader(pdfObject)
+	pages = pdfReader.numPages
+	with Img(filename=path, resolution=300) as img:
+		img.compression_quality = 0
+		img.save(filename="sample_scan.jpg")
+
+	if pages == 1:
+		text = pytesseract.image_to_string(Image.open('sample_scan.jpg'))
+	else:
+		for i in range(0,pages):
+			temp = pytesseract.image_to_string(Image.open('sample_scan-' +str(i) +'.jpg'))
+			text +=temp
+
+	return text
+
 def getName(text):
 		tokens = word_tokenize(text)
 		# print(tokens)
 		# print("--------------------------------------------")
-		punctuations = ['(',')',';',':','[',']',',']
+
 		stop_words = stopwords.words('english')
 
 		# print(stop_words)
@@ -177,17 +201,59 @@ def getKnownLanguage(text):
 
 	return skills
 
+def getDateOfBirth(text):
+	dobRegex =  re.search(r'date.*of.*.birth.*',text, re.IGNORECASE)
+	if dobRegex is None:
+		return None
+
+	temp = text[dobRegex.span()[0]:-1]
+	temp = temp.replace(".","").replace(",","").replace("nd","").replace("th","")
+	matches = datefinder.find_dates(temp)
+	datesList = []
+
+	for i in matches:
+		datesList.append([i,i.year])
+
+	minDate = datesList[0][0]
+	minYear = None
+
+	for i in range(len(datesList)):
+		if minYear is None and datesList[i][1] > 1960:
+			minYear = datesList[i][1]
+			minDate = datesList[i][0]
+		elif datesList[i][1] > 1960 and datesList[i][1] < minYear :
+			minYear = datesList[i][1]
+			minDate = datesList[i][0]
+
+	return minDate
+
+def getAddress(text):
+	tokens = word_tokenize(text)
+	stop_words = stopwords.words('english')
+	filtered = [i for i in tokens if not i in stop_words]
+	sentences = nltk.sent_tokenize(text)
+	sentences = [nltk.word_tokenize(sent) for sent in sentences]
+	sentences = [nltk.pos_tag(sent) for sent in sentences]
+	print(sentences)
 
 for i in scan:
 	print(i)
+
 	extension = i.lower().endswith(('.docx'))
 	text  = ""
 	filePath = i
+	filePath = "./Sample/PulkitGera.pdf"
 	if extension == False:
 		text = convertPDFToText(filePath)
 	else:
 		text = convertDocxToText(filePath)
 
+	getAddress(text)
+	quit()
+
+	
+	# text = "MEGAVAT NAGENDRA PRASAD\nEMAIL: megavatnagendra@gmail.com Mobile: 9542104922\nCAREER OBJECTIVE\nTo work in a firm with a professional work driven environment where I can utilize and apply my\nknowledge, skills which would enable me as a fresh graduate to grow while fulfilling organizational\ngoals.\nACADEMIC CREDENTIALS\nQualification\nBoard/University\nYear\nPerce\nntage\nB.Tech (Computer Science Engineering)\n2013-17\n60\nJawaharlal Nehru Technical\nUniversity- Vizayanagar campus\nIntermediate\nKavitha College\n2013\n81\nHigh School\nALL SAINTS, CHILLAKALLU\n2011\n85\nTECHNICAL SKILLS\nBPM Tools\nProgramming Skills\nDatabase\nOS\nWeb\nIBM BPM 8.5.6\nJava, Python\nMySQL, Oracle\nWindows\nJavaScript, CSS\nPROFESSIONAL EXPERIENCE\nSoftpath technologies ,Hyderabad from Nov 1,2017 - Till date\nPROJECT 1-Application Database Services Process Platform\nEnvironment: IBM BPM 8.5.6, SQL Server.\nDescription: Application database services process platform enable to receive the database\nservice requests from across enterprise and route the requests to appropriate groups for\nfulfillment of request. Process will kick off by creating database service requests and creating\napproval tasks based on approval business rules.\n• Responsibilities:\n• Developed reusable Email Notification service which have been used across the project\n• Develop coach views for approvals tasks.\n Coach Validations and dynamic task assignments.\n•\n•\nEnd to End process testing\nPROJECT 1-DataFlow\nEnvironment: IBM BPM 8.5.6, SQL Server.\nDescription:\nDataflow is a Third Party Organisation which Provides Primary Source Verification\nServices for all types of Background Verification and provides a Report for the Applicants. Initial\nProcess starts from case initiation from many Customer Portals Veriflow,Core Component\ndeveloped in IBM BPM,Case is routed from based on the type of Verification. Based on the\nVerification Report is generated and Produced to the Applicant.\nResponsibilities:\n• Developed Human Services for a Component\n•\nImplementation of Validations and DataBase Operations.\nEnd to End Testing with different Test Scenarios.\n• Involved in enhancements of General System Services.\nINTERPERSONAL SKILL\nAbility to rapidly build relationship and set up trust.\nConfident and Determined\nAbility to cope up with different situations.\n*\nCO-/EXTRA -CURRICULAR ACTIVITIE\nExecutive Member of Tech Feast.\nExecutive Member of Event Organizing Committee in JNT University\n•\nPERSONAL PROFILE\nName:\nGender:\nDate of birth:\nMarital status:\nNationality:\nFather's Name:\nLinguistic Ability:\nAddress:\nNAGENDRA PRASAD MEGAVAT\nMale\n30-10-1996\nSingle\nIndian\nM. BALAJI\nEnglish, Telugu\nFlat No 303, SM Brundavanam Residency, Pragati\nNagar, Hyderabad-50072\n Declaration: I hereby declare that all the details furnished above are true to the best of my\nknowledge and belief.\nNagendra Prasad\n"
+	# print(text)
 	print("Name :" + getName(text))
 	print("Email : " + getEmail(text))
 	if getMobile(text) is not None:
@@ -196,8 +262,11 @@ for i in scan:
 		print("None")
 
 	print("Language :",list(getKnownLanguage(text)))
+	print("DOB :", getDateOfBirth(text))
 
 	mobile_array.append(getMobile(text))
+
+	# print(text)
 
 
 for i in range(0,len(mobile_array)):

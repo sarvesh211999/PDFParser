@@ -1,17 +1,13 @@
-from wand.image import Image as Img
-from PIL import Image
+
+from PIL import Image as Img
 import pyocr
 import pyocr.builders
 import io
 import pytesseract
 
-
-
 tool = pyocr.get_available_tools()[0]
 lang = tool.get_available_languages()[1]
 
-
-final_file = open("text.txt","a")
 
 with Img(filename="./Alakanty_Akhil_Reddy.pdf", resolution=300) as img:
  img.compression_quality = 99
